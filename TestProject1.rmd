@@ -1,0 +1,88 @@
+---
+title: "Project K"
+author: "Team Kanyarasi"
+date: "10-04-2022"
+output:
+  word_document: default
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+
+Polynomial Regression
+
+
+install.packages('tidyverse')          
+install.packages('magrittr')
+install.packages('caret')
+install.packages('olsrr')
+install.packages('car')
+install.packages('broom')
+
+
+
+
+```{r}
+library(dplyr)
+library(caret) 
+library(olsrr)
+library(car)
+library(broom) 
+```
+
+
+```{r}
+library(readxl)
+
+df <- read_excel(file.choose())
+df1 <- read_excel(file.choose())
+df
+```
+```{r}
+set.seed(1994)
+```
+
+
+```{r}
+index <- createDataPartition(df$Y1, p=0.8, list = FALSE, times=1)
+```
+
+
+```{r}
+train_df1 <- df1
+
+test_df <- df
+```
+
+
+```{r}
+set.seed(1994)
+```
+
+
+
+
+
+```{r}
+polynomialregression <- (lm(Y1 ~ poly(X1, 3, raw = TRUE)+ poly(X2, 3, raw = TRUE) + poly(X3, 3, raw = TRUE) + poly(X4, 3, raw = TRUE) + poly(X5, 3, raw = TRUE) + poly(X6, 3, raw = TRUE) + poly(X7, 3, raw = TRUE) + poly(X8, 3, raw = TRUE) + X1:X2:X3:X4:X5:X6:X7:X8 , data = train_df1))
+
+summary(polynomialregression)
+```
+
+```{r}
+predictions2 <- predict(polynomialregression, newdata = test_df)
+predictions2
+```
+
+```{r}
+modelperformance2 <- data.frame(RMSE = RMSE(predictions2, test_df$Y1),
+                       Rsquared = R2(predictions2, test_df$Y1),
+                       MAE = MAE(predictions2, test_df$Y1))
+
+modelperformance2
+```
+
+
+
+

@@ -1,0 +1,107 @@
+---
+title: "Project 1"
+author: "Ketan Kshirsagar"
+date: "10-04-2022"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+`
+
+```{r}
+
+library(tidyverse)          # Pipe operator (%>%) and other commands
+library(dplyr)
+library(ggplot2)
+library(ggplotlyExtra)
+library(magrittr)
+install.packages('caret')
+library(caret)              # Random split of data/cross validation
+install.packages('olsrr')
+library(olsrr)              # Heteroscedasticity Testing (ols_test_score)
+install.packages('car')
+library(car)                # Muticolinearity detection (vif)
+install.packages('broom')
+library(broom) 
+
+```
+
+
+```{r}
+data
+head(train)
+data = read.csv("C:\\Users\\VDU\\Desktop\\train-1.csv")
+```
+
+```{r}
+
+
+str(data)
+boxplot(data)
+table(is.na(data))
+
+data <- na.omit(data) 
+
+plot(data$X2 , data$Y1)
+set.seed(123)
+training.samples <- floor(0.65 * nrow(data))
+
+training.samples <- sample(seq_len(nrow(data)))
+
+train <- data[1:375, c("Y1", "X8", "X7", "X6","X5", "X4", "X3", "X2", "X1")]
+
+test <- data[376:nrow(data), c("Y1", "X8", "X7", "X6","X5", "X4", "X3", "X2", "X1")]
+
+
+```
+
+
+```{R}
+formula = Y1 ~ poly(X1, 3, raw = TRUE)+ poly(X2, 3, raw = TRUE) + poly(X3, 3, raw = TRUE) + poly(X4, 3, raw = TRUE) + poly(X5, 3, raw = TRUE) + poly(X6, 3, raw = TRUE) + poly(X7, 3, raw = TRUE) +poly(X8, 3, raw = TRUE) + X1:X2:X3:X4:X5:X6:X7:X8
+
+pm1 <- lm(formula, data = train)
+#pm1 <- lm(Sales ~ poly(TV , 2) + poly(Radio , 2) + TV:Radio  , data = train.data)
+summary(pm1)
+
+```
+
+```{R}
+pred <- predict(pm1, test)
+pred
+
+pred_df <- data.frame(test$Y1, pred)
+ggplot(pred_df, aes(test.Y1, pred)) + geom_point()
+
+```
+
+```{R}
+plot(test$Y1, pred, col="blue")
+
+plot(pm1 , 1) #Model Fitting
+```
+
+
+```{r}
+plot(x = train$Y1,                          # True values on x-axis
+     y = pm1$fitted.values,               # fitted values on y-axis
+     xlab = "True Values",
+     ylab = "Model Fitted Values",
+     main = "Regression fits of train values using Polynomial Regression")
+
+#lines(pm1$fitted.values, pred, type="l", col="orange1", lwd=2)
+```
+
+
+```{r}
+plot(pred, test$Y1)
+
+```
+
+
+
+
+
+
+
